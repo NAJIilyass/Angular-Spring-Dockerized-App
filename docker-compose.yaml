@@ -1,0 +1,38 @@
+version: "3.8"
+services:
+  mysql-container:
+    image: localhost:8000/registry-mysql 
+    container_name: mysql-container
+    ports:
+      - "3307:3306"
+    networks:
+      - ournetwork
+    volumes:
+      - mysql-vol:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: "ilyass00"
+      MYSQL_DATABASE: "testdb"
+  backend:
+    image: localhost:8000/registry-backend-spring
+    container_name: backend
+    ports:
+      - "5000:8080"
+    networks:
+      - ournetwork
+    depends_on:
+      - mysql-container
+  frontend:
+    image: localhost:8000/registry-frontend-angular
+    container_name: frontend
+    ports:
+      - "8081:80"
+    networks:
+      - ournetwork
+    depends_on:
+      - backend
+volumes:
+  mysql-vol:
+    driver: local
+networks:
+  ournetwork:
+    driver: bridge
